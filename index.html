@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>化繁為剪 Showcase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f3ee;--grid:rgba(40,60,90,.07);--ink:#1d2430;--mute:#6c7280;--line:#c9cdd4;--card:#fbfaf7;
+  --mountain:#d64533;--valley:#2f6fd0;--cut:#1f9a4f;--flat:#b8bcc4}
+:root[data-theme="dark"]{--bg:#0f141c;--grid:rgba(140,170,210,.08);--ink:#e3e8ef;--mute:#8590a0;--line:#2a3442;--card:#141b25;
+  --mountain:#ff6b57;--valley:#5b95ff;--cut:#3fd07d;--flat:#3c4656}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-snap-type:y mandatory;scroll-padding-top:52px}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.85 "Noto Sans TC",sans-serif;
+}
+/* 背景印花：直骨架＋圓盤填充的輔助線，固定一層，捲動時以 0.3 倍速移動（視差） */
+.bgl{position:fixed;inset:0;z-index:-1;pointer-events:none;background:url(assets/bg_pattern.svg) 50% 0/1520px;opacity:.28}
+:root[data-theme="dark"] .bgl{filter:invert(1) hue-rotate(180deg)}
+img{display:block;width:100%;height:auto}
+.mono{font-family:"IBM Plex Mono",monospace}
+.wrap{max-width:1200px;margin:0 auto;padding:0 40px}
+
+header.bar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--ink)}
+header.bar .wrap{display:flex;justify-content:space-between;align-items:center;height:52px;font:500 12px "IBM Plex Mono",monospace;letter-spacing:.08em}
+header.bar nav a{color:var(--ink);text-decoration:none;margin-left:22px;white-space:nowrap}
+header.bar nav a:hover{color:var(--cut)}
+
+/* legend chips */
+.lg{display:inline-flex;align-items:center;gap:8px;margin-right:22px;font:500 12px "IBM Plex Mono",monospace;color:var(--mute)}
+.lg i{display:inline-block;width:28px;height:0;border-top:2px solid}
+.lg .m{border-color:var(--mountain)}
+.lg .v{border-color:var(--valley);border-top-style:dashed}
+.lg .c{border-color:var(--cut);border-top-width:3px}
+
+/* 故事站暫不開放：連結變灰，點了顯示 coming soon */
+a.soon{opacity:.45;cursor:not-allowed}
+header.bar nav a.soon:hover,a.soon:hover{color:inherit}
+.toast{position:fixed;left:50%;bottom:28px;z-index:60;transform:translate(-50%,12px);opacity:0;pointer-events:none;background:var(--ink);color:var(--bg);
+  padding:10px 18px;font:500 13px "IBM Plex Mono","Noto Sans TC",monospace;letter-spacing:.06em;transition:opacity .2s,transform .2s}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+/* hero */
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:56px;align-items:center;padding:88px 0 72px}
+.hero .id{font:500 12px "IBM Plex Mono",monospace;color:var(--mute);letter-spacing:.1em}
+.hero h1{font:900 clamp(56px,8vw,112px)/1.05 "Noto Sans TC",sans-serif;letter-spacing:.08em;margin:20px 0 8px}
+/* 彩蛋：點「剪」→ 從中心斜 20° 剪一刀，右上那塊順著刀線滑出淡出，再恢復（tan20°≈.364） */
+.egg{--dy:.08em;position:relative;display:inline-block;letter-spacing:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.egg .pc{position:absolute;inset:0;opacity:0;pointer-events:none}
+.egg .lo{clip-path:polygon(calc(50% - 1em) calc(50% + var(--dy) - .364em),calc(50% + 1em) calc(50% + var(--dy) + .364em),calc(50% + 1em) 200%,calc(50% - 1em) 200%)}
+.egg .up{clip-path:polygon(calc(50% - 1em) calc(50% + var(--dy) - .364em),calc(50% + 1em) calc(50% + var(--dy) + .364em),calc(50% + 1em) -100%,calc(50% - 1em) -100%)}
+.egg .ln{position:absolute;left:50%;top:calc(50% + var(--dy));width:1.5em;height:3px;margin:-1.5px 0 0 -.75em;background:var(--cut);
+  transform:rotate(20deg);clip-path:inset(0 100% 0 0);opacity:0;pointer-events:none}
+.egg.go .ch{opacity:0}
+.egg.go .pc{opacity:1}
+.egg.go .ln{animation:egg-ln .9s ease-out forwards}
+.egg.go .up{animation:egg-up 1.6s ease-in-out forwards}
+@keyframes egg-ln{0%{opacity:1;clip-path:inset(0 100% 0 0)}30%{opacity:1;clip-path:inset(0 0 0 0)}100%{opacity:0;clip-path:inset(0 0 0 0)}}
+@keyframes egg-up{0%,30%{transform:none;opacity:1}65%{transform:translate(.4em,.146em);opacity:0}80%{transform:none;opacity:0}100%{transform:none;opacity:1}}
+.hero .en{margin:.75em 0 0 .3em;font:500 18px "IBM Plex Mono",monospace;color:var(--mute)}
+.hero p{margin:36px 0 28px;font-size:19px;max-width:24em}
+.sheet{background:var(--card);border:1px solid var(--line);padding:28px 28px 16px;position:relative}
+.sheet::before{content:"PANT PANEL 01 — CREASE PATTERN";position:absolute;top:-10px;left:16px;background:var(--bg);padding:0 8px;font:500 10px "IBM Plex Mono",monospace;letter-spacing:.12em;color:var(--mute)}
+.sheet svg{width:100%;height:auto;max-height:560px;display:block}
+.sheet.reel{justify-self:center;padding:16px 16px 10px}
+.sheet.reel::before{content:"PANT PANEL 01 — FOLD / CUT / UNFOLD"}
+.sheet video{display:block;height:min(66vh,620px);width:auto;max-width:100%;aspect-ratio:9/16;object-fit:cover;background:#fff}
+.sheet .cap{display:flex;justify-content:space-between;margin-top:10px;font:400 11px "IBM Plex Mono",monospace;color:var(--mute)}
+/* draw-on animation */
+@media (prefers-reduced-motion:no-preference){
+  .draw path,.draw polygon{animation:draw 2.4s cubic-bezier(.6,0,.2,1) both}
+  .draw path:nth-of-type(2){animation-delay:.2s}
+  .draw path:nth-of-type(3){animation-delay:.6s}
+  .draw path:nth-of-type(4){animation-delay:1s}
+  .draw polygon{animation-delay:1.6s;animation-duration:1.4s}
+  @keyframes draw{from{stroke-dashoffset:var(--len);stroke-dasharray:var(--len)}to{stroke-dashoffset:0;stroke-dasharray:var(--len)}}
+}
+
+/* 一屏一重點：每段至少一個畫面高，捲動會停在段落開頭 */
+.scr{min-height:calc(100vh - 52px);min-height:calc(100svh - 52px);scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;padding:56px 0}
+.hero.scr{display:grid}
+.dots{position:fixed;right:18px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px;z-index:6}
+.dots a{width:9px;height:9px;border:1.5px solid var(--mute);transform:rotate(45deg);display:block;transition:background .2s,border-color .2s}
+.dots a:hover,.dots a.on{background:var(--cut);border-color:var(--cut)}
+footer{scroll-snap-align:end}
+
+/* section frame */
+.sec{padding:96px 0 0}
+.sec.scr{padding:56px 0}
+.sec-h{display:grid;grid-template-columns:1fr;gap:10px;text-align:center;border-top:2px dashed var(--valley);padding-top:28px;margin-bottom:44px;position:relative}
+.sec-h.m{border-top:2px solid var(--mountain)}
+.sec-h::after{content:attr(data-fold);position:absolute;top:-10px;right:0;background:var(--bg);padding:0 8px;font:500 10px "IBM Plex Mono",monospace;letter-spacing:.12em;color:var(--mute)}
+.sec-h .k{font:600 13px "IBM Plex Mono",monospace;color:var(--mute)}
+.sec-h h2{font:700 clamp(26px,3vw,38px)/1.35 "Noto Sans TC",sans-serif}
+.sec-h p{color:var(--mute);margin:10px auto 0;max-width:36em}
+
+/* ladder grid */
+.ladder{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column}
+.card .im{aspect-ratio:4/3;border-bottom:1px solid var(--line);overflow:hidden;background:#fff;display:flex;align-items:center;justify-content:center}
+.card .im.dk{background:#1b1b1d}
+.card .im img{width:100%;height:100%;object-fit:contain}
+.card .im.cv img{object-fit:cover}
+.card .bd{padding:18px 20px 22px}
+.card .t{display:flex;justify-content:space-between;font:600 12px "IBM Plex Mono",monospace;color:var(--mute);letter-spacing:.06em}
+.card h3{font-size:17px;margin:8px 0 8px;line-height:1.55}
+.card p{font-size:14px;color:var(--mute)}
+.card p.ok{color:var(--ink);margin-top:8px;padding-left:12px;border-left:3px solid var(--cut)}
+
+/* pipeline */
+.pipe{display:grid;grid-template-columns:repeat(7,1fr);gap:0;border:1px solid var(--ink);background:var(--card)}
+.pipe>div{border-left:1px solid var(--line);padding:14px 12px 16px;position:relative}
+.pipe>div:first-child{border-left:0}
+.pipe .im{aspect-ratio:3/4;overflow:hidden;background:#fff;margin-bottom:12px}
+.pipe .im.dk{background:#1b1b1d}
+.pipe .im img{height:100%;object-fit:cover}
+.pipe .im.dk img{object-fit:contain}
+.pipe .n{font:600 11px "IBM Plex Mono",monospace;color:var(--mute)}
+.pipe b{display:block;font-size:14px;margin:2px 0 4px}
+.pipe small{font-size:12px;color:var(--mute);line-height:1.6;display:block}
+.tag{display:inline-block;margin-top:8px;font:600 10px "IBM Plex Mono",monospace;padding:1px 6px;border:1px solid var(--line);color:var(--mute)}
+.tag.me{border-color:var(--cut);color:var(--cut)}
+
+/* limits */
+.lims{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.lim{background:var(--card);border:1px solid var(--line);padding:24px}
+.lim .k{font:600 11px "IBM Plex Mono",monospace;color:var(--mountain);letter-spacing:.1em}
+.lim .v{font:600 60px/1 "IBM Plex Mono",monospace;margin:18px 0 14px;letter-spacing:-.02em}
+.lim .v small{font-size:20px;color:var(--mute);margin-left:4px}
+.lim h3{font-size:17px}
+.lim p{font-size:14px;color:var(--mute);margin-top:6px}
+.meter{margin-top:14px;font:400 11px "IBM Plex Mono",monospace;color:var(--mute)}
+.meter div{height:6px;background:var(--line);margin:3px 0 9px}
+.meter div i{display:block;height:100%}
+.verdict{margin-top:20px;border:2px solid var(--cut);padding:22px 24px;display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center;background:var(--card)}
+.verdict .v{font:600 30px "IBM Plex Mono",monospace;white-space:nowrap}
+.verdict p{color:var(--mute)}
+.verdict p b{color:var(--ink)}
+
+/* log */
+.log{border:1px solid var(--ink);background:var(--card);font-size:14px}
+.log .r{display:grid;grid-template-columns:70px 1.3fr 1fr 1.1fr;gap:20px;padding:16px 20px;border-top:1px solid var(--line);align-items:baseline}
+.log .r:first-child{border-top:0}
+.log .r.h{font:600 11px "IBM Plex Mono",monospace;color:var(--mute);letter-spacing:.08em;background:var(--bg)}
+.log .id{font:600 12px "IBM Plex Mono",monospace;color:var(--mountain)}
+.log .q{font-weight:700;font-size:15px}
+.log .c{color:var(--mute)}
+.log .f b{color:var(--cut);font-weight:500}
+
+/* roles */
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.roles>div{background:var(--card);border:1px solid var(--line);padding:24px 28px}
+.roles h3{font:700 18px "Noto Sans TC",sans-serif;display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--ink);padding-bottom:12px;margin-bottom:6px}
+.roles h3 span{font:500 11px "IBM Plex Mono",monospace;color:var(--mute)}
+.roles li{list-style:none;padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.roles li a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
+.roles li a:hover{color:var(--cut);border-color:var(--cut)}
+.why .lim h3{font-size:18px;line-height:1.55;margin-top:14px}
+.roles li::before{content:"→ ";font-family:"IBM Plex Mono",monospace;color:var(--mute)}
+
+footer{margin-top:96px;border-top:1px solid var(--ink);padding:22px 0 48px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font:400 11px "IBM Plex Mono",monospace;color:var(--mute)}
+footer button{background:none;border:1px solid var(--ink);color:var(--ink);font:inherit;padding:3px 10px;cursor:pointer}
+
+@media (max-width:640px){
+  html{scroll-snap-type:none}
+  .scr{min-height:0;padding:64px 0 0}
+  .hero.scr{padding:40px 0}
+  .dots{display:none}
+  .wrap{padding:0 16px}
+  header.bar .wrap{height:auto;padding-top:10px;padding-bottom:10px;flex-wrap:wrap;gap:6px}
+  header.bar nav{display:flex;flex-wrap:wrap;gap:4px 14px}
+  header.bar nav a{margin-left:0;font-size:11px}
+  .hero{grid-template-columns:1fr;padding:48px 0;gap:32px}
+  .sec{padding-top:64px}
+  .sec-h{grid-template-columns:1fr;gap:6px}
+  .ladder,.lims,.roles{grid-template-columns:1fr}
+  .pipe{grid-template-columns:1fr 1fr}
+  .pipe>div{border-top:1px solid var(--line)}
+  .pipe>div:nth-child(odd){border-left:0}
+  .verdict{grid-template-columns:1fr;gap:8px}
+  .log .r{grid-template-columns:1fr;gap:4px}
+  .log .r.h{display:none}
+  .lg{margin-right:12px}
+}
+
+/* works */
+.works{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:20px}
+.works .card .im{aspect-ratio:auto;height:min(44vh,440px)}
+.works .card .im.tl{align-items:flex-start;background:#14161a}
+.works .card .im.tl img{width:100%;height:auto;min-height:0}
+/* how */
+.how{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--ink);background:var(--card)}
+.how>div{padding:16px;border-left:1px solid var(--line);position:relative}
+.how>div:first-child{border-left:0}
+.how>div:not(:last-child)::after{content:"→";position:absolute;right:-9px;top:40%;background:var(--card);font:600 14px "IBM Plex Mono",monospace;color:var(--cut);z-index:1}
+.how .im{aspect-ratio:1;background:#fff;overflow:hidden;margin-bottom:12px}
+.how .im.dk{background:#1b1b1d}
+.how .im img{height:100%;object-fit:cover}.how .im.dk img{object-fit:contain}
+.how .n{font:600 11px "IBM Plex Mono",monospace;color:var(--mute)}
+.how b{display:block;font-size:16px;margin:2px 0 4px}
+.how small{font-size:13px;color:var(--mute);display:block}
+/* scope */
+.scope{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.scope>div{background:var(--card);border:1px solid var(--line);padding:24px 28px}
+.scope h3{font-size:17px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--ink);padding-bottom:12px}
+.scope h3 i{width:32px;border-top:3px solid var(--cut)}
+.scope .no h3 i{border-top:2px dashed var(--valley)}
+.scope li{list-style:none;padding:12px 0;border-bottom:1px dashed var(--line);font-size:14px;color:var(--mute)}
+.scope li b{display:block;color:var(--ink)}
+/* next */
+.next{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.ph{aspect-ratio:2/3;border:1.5px dashed var(--flat);background:var(--card);padding:12px;display:flex;flex-direction:column;justify-content:space-between;font:500 11px "IBM Plex Mono","Noto Sans TC",monospace;color:var(--mute)}
+.ph b{font:600 22px "IBM Plex Mono",monospace;color:var(--ink)}
+@media (max-width:640px){
+  .works,.scope{grid-template-columns:1fr}
+  .how{grid-template-columns:1fr 1fr}
+  .how>div{border-top:1px solid var(--line)}
+  .how>div::after{display:none}
+  .next{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+
+<header class="bar"><div class="wrap"><span>化繁為剪 / FOLD&amp;CUT</span>
+<nav aria-label="網站頁面"><a href="https://fold-and-cut-fashion.netlify.app/index.html" class="soon" aria-disabled="true">六階梯子</a><a href="https://fold-and-cut-fashion.netlify.app/problems.html" class="soon" aria-disabled="true">我抓到的問題</a><a href="https://fold-and-cut-fashion.netlify.app/how-it-works.html" class="soon" aria-disabled="true">工具怎麼運作</a><a href="https://fold-and-cut-fashion.netlify.app/journey.html" class="soon" aria-disabled="true">最初的 11 天</a></nav></div></header>
+<div class="wrap">
+<section class="hero scr" id="top" data-name="化繁為剪">
+  <div>
+    <div class="id">GRADUATION PROJECT / 2026 ・ Wllllam</div>
+    <h1>化繁為<span class="egg"><span class="ch">剪</span><span class="pc lo" aria-hidden="true">剪</span><span class="pc up" aria-hidden="true">剪</span><span class="ln" aria-hidden="true"></span></span></h1>
+    <div class="en">Fold the Complex, Cut It Simple</div>
+  </div>
+  <div class="sheet reel">
+    <video src="assets/cover_reel.mp4?v=2" poster="assets/cover_reel.jpg" autoplay muted loop playsinline aria-label="褲版從一張紙摺好、剪下、攤開，縫成褲子的模擬影片"></video>
+    <div class="cap"><span>褲版 1 ・ 從摺紙到穿上</span><span>CUT ×1</span></div>
+  </div>
+</section>
+
+
+<section class="sec scr" id="why" data-name="為什麼">
+  <div class="sec-h" data-fold="VALLEY FOLD"><div class="k">01 / WHY</div><div><h2>用一條數學定理打版，AI 幫我把它做成工具</h2><p>方法的核心是數學。AI 是讓它從論文走到工作桌上的輔助。</p></div></div>
+  <div class="lims why">
+    <div class="lim"><div class="k" style="color:var(--mountain)">MATH ・ 數學定理</div><h3>摺剪定理：直線構成的圖形，都能摺好後一刀剪出</h3><p>Erik Demaine 等人在 1998 年前後證明。數學上已經保證「做得到」，難的是摺線要摺在哪裡，手算不出來。</p></div>
+    <div class="lim"><div class="k" style="color:var(--valley)">AI ・ 輔助</div><h3>AI 協助寫程式，把計算接到打版</h3><p>MIT 課程有開源的計算工具，但要用座標操作。我用 AI（Claude）協助寫程式，串成從照片到印紙的網站。</p></div>
+    <div class="lim"><div class="k" style="color:var(--cut)">ME ・ 設計者</div><h3>我選版型、親手摺、判斷能不能穿</h3><p>每一張紙都手摺驗證，把數學上「可以」的結果，篩成衣服上「能用」的。</p></div>
+  </div>
+</section>
+
+<section class="sec scr" id="works" data-name="成果">
+  <div class="sec-h m" data-fold="MOUNTAIN FOLD"><div class="k">02 / WORKS</div><div><h2>三件成果：網站、摺線紙、褲子</h2><p>一個打版用的計算網站、照著它摺出來的紙，以及用同樣方法剪布縫成的褲子。</p></div></div>
+  <div class="works">
+    <div class="card"><div class="im tl"><img src="assets/web_pants.jpg" alt="計算網站的開始畫面：上方放手繪照片，下方是七個步驟的流程" style="background:#14161a"></div><div class="bd"><div class="t"><span>TOOL</span><span>WEB</span></div><h3>摺線計算網站</h3><p>照片描成輪廓、向量編輯修正、算出山谷摺、3D 模擬先摺一次，實際尺寸輸出並標好摺疊順序。</p></div></div>
+    <div class="card"><div class="im"><img src="assets/paper_pants.jpg" alt="褲版的 1:1 摺線紙檔案：紅線山摺、藍線谷摺、綠線剪" style="object-fit:contain;background:#fff"></div><div class="bd"><div class="t"><span>PAPER</span><span>1:1</span></div><h3>摺線紙</h3><p>一條線一個編號，照順序摺，沿綠線剪。</p></div></div>
+    <div class="card"><div class="im"><img src="assets/pants_white.jpg" alt="褲子模擬成品"></div><div class="bd"><div class="t"><span>GARMENT</span><span>3D</span></div><h3>褲子</h3><p>四片裁片都是摺好之後一刀剪出來，縫起來的樣子先在 3D 模擬裡確認。</p></div></div>
+  </div>
+</section>
+
+<section class="sec scr" id="how" data-name="運作">
+  <div class="sec-h" data-fold="VALLEY FOLD"><div class="k">03 / HOW</div><div><h2>四步：從手繪版型到一片裁片</h2></div></div>
+  <div class="how">
+    <div><div class="im"><img src="assets/edited.jpg" alt="手繪褲版照片，綠色是描出的輪廓"></div><div class="n">STEP 01</div><b>描出版型</b><small>拍下手繪的褲版，在網站上描出輪廓（綠色）。</small></div>
+    <div><div class="im"><img src="assets/print1.jpg" alt="同一片褲版算出的摺線圖" style="object-fit:contain"></div><div class="n">STEP 02</div><b>算出摺線</b><small>同一片褲版算出摺線：紅線山摺、藍線谷摺，綠線是要剪的輪廓。</small></div>
+    <div><div class="im"><img src="assets/step3_cut_floor.jpg" alt="把摺好的紙放在地上，用剪刀剪一刀" style="object-position:50% 50%"></div><div class="n">STEP 03</div><b>摺平，剪一刀</b><small>把印好的紙照線摺平，剪刀沿著綠線剪一刀。</small></div>
+    <div><div class="im"><img src="assets/step4_unfold_hold.jpg" alt="攤開後拿起來的整片褲版" style="object-position:50% 25%"></div><div class="n">STEP 04</div><b>攤開</b><small>把剪下的紙攤開，就是一片完整的裁片。</small></div>
+  </div>
+</section>
+
+<section class="sec scr" id="specs" data-name="實測">
+  <div class="sec-h m" data-fold="MOUNTAIN FOLD"><div class="k">04 / TESTED</div><div><h2>褲版，真的用手摺得出來</h2><p>拿完成的褲版實際摺過、剪過，也拿連身裙試過，找出哪裡會卡住。</p></div></div>
+  <div class="lims">
+    <div class="lim"><div class="k" style="color:var(--cut)">摺得動</div><div class="v">33<small>條摺線</small></div><h3>每一條都夠長，捏得住</h3><p>連身裙需要 158 條摺線，很多短到捏不住，所以目前只有褲版摺得出來。</p></div>
+    <div class="lim"><div class="k" style="color:var(--cut)">裁掉多餘的紙</div><div class="v">1.2<small>倍大</small></div><h3>紙只要比裁片大一點</h3><p>原本紙要準備裁片的 5 倍大。先把剪線外面用不到的紙裁掉，現在大約 1.2 倍就夠。</p></div>
+    <div class="lim"><div class="k" style="color:var(--cut)">剪布</div><div class="v">左右<small>各一張</small></div><h3>左右片分開剪，不對摺</h3><p>布對摺一起剪太厚，會剪歪。所以左片、右片各印一張摺線紙，各剪一次。</p></div>
+  </div>
+  <div class="verdict"><div class="v">CUT ×1</div><p><b>每一片裁片，只剪一刀。</b></p></div>
+</section>
+
+<section class="sec scr" id="scope" data-name="範圍">
+  <div class="sec-h" data-fold="VALLEY FOLD"><div class="k">05 / LIMITS</div><div><h2>數學上都算得出來，現實的極限我已經實測出來了</h2><p>形狀越複雜，摺線就越多、越短，最後手會摺不動。所以一張紙只剪一片裁片。</p></div></div>
+  <div class="scope">
+    <div><h3><i></i>手摺得出來</h3><ul><li><b>邊是直線、轉角不多的裁片</b>像褲版這樣的形狀。</li><li><b>一次做一片</b>每片裁片各用一張紙，剪一刀。</li></ul></div>
+    <div class="no"><h3><i></i>數學有解，現實摺不出來</h3><ul><li><b>兩個往內凹的角靠太近</b>摺線會在兩個角之間來回反彈，又多又密，紙上摺不出來。拿掉其中一個角就摺得出來。</li><li><b>轉角太多的形狀</b>像連身裙，摺線多到 158 條，短到摺不動。</li></ul></div>
+  </div>
+</section>
+
+<section class="sec scr" id="next" data-name="接下來">
+  <div class="sec-h m" data-fold="MOUNTAIN FOLD"><div class="k">06 / NEXT</div><div><h2>接下來，用這個方法做畢業製作系列</h2></div></div>
+  <div class="roles">
+    <div><h3>致謝<span>CREDITS</span></h3><ul><li>靈感來源：Michael Stevens</li><li>摺剪定理：Erik Demaine 等人</li><li>摺線計算：MIT 課程的開源網頁工具</li><li>程式撰寫：AI（Claude）協助</li><li>設計、打版、實摺：Wllllam</li></ul></div>
+    <div><h3>繼續看<span>MORE</span></h3><ul><li><a href="https://fold-and-cut-fashion.netlify.app/index.html" class="soon" aria-disabled="true">六階梯子：從定理到褲子的六個階段</a></li><li><a href="https://fold-and-cut-fashion.netlify.app/problems.html" class="soon" aria-disabled="true">我抓到的問題</a></li><li><a href="https://fold-and-cut-fashion.netlify.app/how-it-works.html" class="soon" aria-disabled="true">工具怎麼運作</a></li><li><a href="https://fold-and-cut-fashion.netlify.app/journey.html" class="soon" aria-disabled="true">最初的 11 天</a></li></ul></div>
+  </div>
+</section>
+</div>
+
+<div class="bgl" aria-hidden="true"></div>
+<nav class="dots" aria-label="段落"></nav>
+<footer><div class="wrap"><span>化繁為剪 ・ 畢業製作 ・ 摺線計算採用 MIT 開源工具，程式由 AI（Claude）協助撰寫 ・ 數字來自 2026 年 9 月實測</span><button id="tt" type="button">深色／淺色</button></div></footer>
+<script>
+document.getElementById('tt').onclick=()=>{const r=document.documentElement;r.dataset.theme=r.dataset.theme==='dark'?'light':'dark'};
+// 右側菱形小點：每一屏一個，點了跳過去；方向鍵、PageUp/Down、空白鍵一次換一屏
+const ss=[...document.querySelectorAll('.scr')],dots=document.querySelector('.dots');
+ss.forEach(s=>{const a=document.createElement('a');a.href='#'+s.id;a.title=a.ariaLabel=s.dataset.name;
+  a.addEventListener('click',e=>{e.preventDefault();s.scrollIntoView()});dots.appendChild(a)});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const i=ss.indexOf(e.target);dots.querySelectorAll('a').forEach((a,j)=>a.classList.toggle('on',i===j))}}),{rootMargin:'-45% 0px -45% 0px'});
+ss.forEach(s=>io.observe(s));
+// 重新整理時回到上次看的那一屏（記在這個分頁的 sessionStorage；網址的 # 不再決定位置）
+if('scrollRestoration' in history)history.scrollRestoration='manual';
+const KEY='show-pos';let saveT;
+addEventListener('scroll',()=>{clearTimeout(saveT);saveT=setTimeout(()=>{
+  const y=scrollY+innerHeight/2,cur=ss.find(s=>s.offsetTop<=y&&s.offsetTop+s.offsetHeight>y);
+  try{sessionStorage.setItem(KEY,cur?cur.id:'top')}catch(_){}},150)},{passive:true});
+addEventListener('load',()=>{let id=null;try{id=sessionStorage.getItem(KEY)}catch(_){}
+  id=id||location.hash.slice(1);const t=id&&document.getElementById(id);
+  const h=document.documentElement,sb=h.style.scrollBehavior;h.style.scrollBehavior='auto';
+  if(t&&t!==ss[0])t.scrollIntoView();else scrollTo(0,0);
+  requestAnimationFrame(()=>h.style.scrollBehavior=sb)});
+addEventListener('keydown',e=>{if(!['ArrowDown','ArrowUp','PageDown','PageUp',' '].includes(e.key)||e.target.closest('button,a,input'))return;
+  const y=scrollY+innerHeight/2;let i=ss.findIndex(s=>s.offsetTop<=y&&s.offsetTop+s.offsetHeight>y);
+  i+=(e.key==='ArrowUp'||e.key==='PageUp'||(e.key===' '&&e.shiftKey))?-1:1;if(ss[i]){e.preventDefault();ss[i].scrollIntoView()}});
+// 彩蛋：點封面「剪」字播一次剪開的動畫
+const egg=document.querySelector('.egg');
+if(egg)egg.addEventListener('click',()=>{egg.classList.remove('go');void egg.offsetWidth;egg.classList.add('go')});
+if(egg)egg.querySelector('.up').addEventListener('animationend',()=>egg.classList.remove('go'));
+// 故事站暫不開放：攔下點擊，顯示 coming soon
+const toast=document.createElement('div');toast.className='toast';toast.setAttribute('role','status');document.body.appendChild(toast);
+let tt;document.querySelectorAll('a.soon').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();
+  toast.textContent='Coming soon';toast.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>toast.classList.remove('on'),1800)}));
+// 背景印花視差：背景以內容 0.3 倍的速度捲動；偏好減少動態時固定不動
+const bgl=document.querySelector('.bgl');
+if(bgl&&matchMedia('(prefers-reduced-motion:no-preference)').matches){
+  let tk=0;addEventListener('scroll',()=>{if(tk)return;tk=requestAnimationFrame(()=>{bgl.style.backgroundPositionY=(-scrollY*0.3)+'px';tk=0})},{passive:true});
+}
+// 摺線逐條畫出：量每條路徑長度給動畫用；虛線的谷摺/平摺畫完後恢復原本的虛線
+const svg=document.querySelector('.sheet svg');
+if(svg&&matchMedia('(prefers-reduced-motion:no-preference)').matches){
+  svg.querySelectorAll('path,polygon').forEach(p=>{
+    const len=Math.ceil(p.getTotalLength?p.getTotalLength():1000);p.style.setProperty('--len',len);
+    const dash=p.getAttribute('stroke-dasharray');
+    if(dash)p.addEventListener('animationend',()=>{p.style.animation='none';p.style.strokeDasharray=dash},{once:true});
+  });
+  svg.classList.add('draw');
+}
+</script>
+</body>
+</html>
